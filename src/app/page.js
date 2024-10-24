@@ -1,95 +1,91 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client";
+import { useState } from "react";
+import { FaRegUserCircle } from "react-icons/fa";
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
-  return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.js</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [Username, setUsername] = useState("");
+  const [Password, setPassword] = useState("");
+  const [Msg, setMsg] = useState("");
+  const router = useRouter();
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const res = await fetch("/api/accessapi", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ Username, Password }),
+    });
+
+    const data = await res.json();
+    const role = data.user?.Accesstype || "guest";
+
+    if (res.ok) {
+      localStorage.setItem("Username", Username);
+      localStorage.setItem("role", role);
+      setMsg(`Success: ${data.Msg}`);
+      router.push("/cpanel");
+    } else if (res.status === 403) {
+      setMsg(`Error: ${data.Msg}`);
+    } else {
+      setMsg(`Error: ${data.Msg}`);
+    }
+  };
+
+  return (
+    <>
+      <div className="dg_form_handler">
+        {Msg && (
+          <div className="alert alert-info Msg">
+            <p>{Msg}</p>
+          </div>
+        )}
+        <form className="form" onSubmit={handleSubmit}>
+          <div className="flex-column">
+            <label>Username</label>
+          </div>
+          <div className="inputForm">
+            <FaRegUserCircle />
+            <input
+              type="text"
+              className="input"
+              id="Username"
+              value={Username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Enter your username"
             />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+          </div>
+          <div className="flex-column">
+            <label>Password</label>
+          </div>
+          <div className="inputForm">
+            <svg
+              height="20"
+              viewBox="-64 0 512 512"
+              width="20"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="m336 512h-288c-26.453125 0-48-21.523438-48-48v-224c0-26.476562 21.546875-48 48-48h288c26.453125 0 48 21.523438 48 48v224c0 26.476562-21.546875 48-48 48zm-288-288c-8.8125 0-16 7.167969-16 16v224c0 8.832031 7.1875 16 16 16h288c8.8125 0 16-7.167969 16-16v-224c0-8.832031-7.1875-16-16-16zm0 0"></path>
+              <path d="m304 224c-8.832031 0-16-7.167969-16-16v-80c0-52.929688-43.070312-96-96-96s-96 43.070312-96 96v80c0 8.832031-7.167969 16-16 16s-16-7.167969-16-16v-80c0-70.59375 57.40625-128 128-128s128 57.40625 128 128v80c0 8.832031-7.167969 16-16 16zm0 0"></path>
+            </svg>
+            <input
+              type="Password"
+              className="input"
+              id="Password"
+              value={Password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter your Password"
+            />
+          </div>
+
+          <button type="submit" className="button-submit">
+            Sign In
+          </button>
+        </form>
+      </div>
+    </>
   );
 }
