@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { MongoClient } from 'mongodb';
 
-const uri = "mongodb+srv://karthikvaranasi07:l39eu8xTl4lK9stI@cluster0.vbw2n.mongodb.net/?retryWrites=true&w=majority&appName=Karthik"
+const uri = 'mongodb+srv://karthikvaranasi07:l39eu8xTl4lK9stI@cluster0.vbw2n.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 let client;
 
 // Initialize MongoDB client once
