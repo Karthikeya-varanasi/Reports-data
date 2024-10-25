@@ -1,4 +1,5 @@
 "use client";
+
 import { useState, useEffect, useMemo, useRef } from "react";
 import Chart from 'chart.js/auto';
 import { Select, DatePicker, Space, Button, Drawer, theme } from 'antd';
@@ -15,7 +16,7 @@ import "../../../../node_modules/ag-grid-community/styles/ag-theme-alpine.css";
 import Navigation from "../head/navigation/page";
 import Tbar from "../head/tbar/page";
 
-export default function Mboard() {
+export default function Aconsle() {
     const [sidebarToggled, setSidebarToggled] = useState(false);
     const yesterday = dayjs().subtract(2, "days").format("YYYY-MM-DD")
     const defaultDates = [dayjs(yesterday), dayjs(yesterday)]

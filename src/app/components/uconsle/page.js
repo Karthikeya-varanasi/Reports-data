@@ -16,7 +16,7 @@ import "../../../../node_modules/ag-grid-community/styles/ag-theme-alpine.css";
 import Navigation from "../head/navigation/page";
 import Tbar from "../head/tbar/page";
 
-export default function Eboard() {
+export default function Uconsle() {
     const [sidebarToggled, setSidebarToggled] = useState(false);
     const yesterday = dayjs().subtract(2, "days").format("YYYY-MM-DD")
     const defaultDates = [dayjs(yesterday), dayjs(yesterday)]
@@ -28,119 +28,106 @@ export default function Eboard() {
     const [Table, setTable] = useState(null)
     const [finaldata, setfinaldata] = useState([])
     useEffect(() => {
-        const fetchMainData = async () => {
+        async function fetchMainData() {
             try {
                 setLoading(true);
-                // Ensure this runs only in the browser
-                if (typeof window !== 'undefined') {
-                    const Username = localStorage.getItem("Username");
-                    const response = await fetch(`/api/consleapi?user=${Username}&start=${startDate}&end=${endDate}&time=${timezone}`);
-                    const data = await response.json();
-                    console.log(data, "dboard");
-                    
-                    const list = data.userinfo;
-                    const flattenedUserdata = data.fetchedAccounts.flat().filter(obj => Object.keys(obj).length > 0);
-                    setTable(flattenedUserdata);
-                    
-                    const groupedData = {};
-                    flattenedUserdata.forEach(dataEntry => {
-                        const dynamicGroupValue = dataEntry.platform;
-                        if (!groupedData[dynamicGroupValue]) {
-                            groupedData[dynamicGroupValue] = {
-                                spend: 0,
-                                estimatedRevenue: 0,
-                                profit: 0,
-                                cpl: 0,
-                                cpc: 0,
-                                rpc: 0,
-                                date_start: '',
-                            };
-                        }
-                        groupedData[dynamicGroupValue].spend += parseFloat(dataEntry.spend || 0);
-                        groupedData[dynamicGroupValue].estimatedRevenue += parseFloat(dataEntry.estimatedRevenue || 0);
-                        groupedData[dynamicGroupValue].profit += parseFloat(dataEntry.profit || 0);
-                        groupedData[dynamicGroupValue].cpl += parseFloat(dataEntry.cpl || 0);
-                        groupedData[dynamicGroupValue].cpc += parseFloat(dataEntry.cpc || 0);
-                        groupedData[dynamicGroupValue].rpc += parseFloat(dataEntry.rpc || 0);
-                        
-                        if (!groupedData[dynamicGroupValue].date_start) {
-                            groupedData[dynamicGroupValue].date_start = dayjs(dataEntry.date_start).format('YYYY-MM-DD');
-                        } else {
-                            const currentDate = dayjs(groupedData[dynamicGroupValue].date_start);
-                            const newDate = dayjs(dataEntry.date_start);
-                            groupedData[dynamicGroupValue].date_start = currentDate.isBefore(newDate)
-                                ? newDate.format('YYYY-MM-DD')
-                                : currentDate.format('YYYY-MM-DD');
-                        }
-                    });
+                
+                // Check if window is defined before accessing localStorage
+                const Username = typeof window !== 'undefined' ? localStorage.getItem("Username") : null;
 
-                    setRawData(groupedData);
+                if (!Username) {
+                    console.error("Username not found in localStorage.");
                     setLoading(false);
+                    return; // Exit if no username is found
                 }
+
+                const response = await fetch(`/api/consleapi?user=${Username}&start=${startDate}&end=${endDate}&time=${timezone}`);
+                const data = await response.json();
+                console.log(data, "dboard");
+
+                const flattenedUserdata = data.fetchedAccounts.flat().filter(obj => Object.keys(obj).length > 0);
+                setTable(flattenedUserdata);
+
+                const groupedData = {};
+                flattenedUserdata.forEach(dataEntry => {
+                    const dynamicGroupValue = dataEntry.platform;
+
+                    if (!groupedData[dynamicGroupValue]) {
+                        groupedData[dynamicGroupValue] = {
+                            spend: 0,
+                            estimatedRevenue: 0,
+                            profit: 0,
+                            cpl: 0,
+                            cpc: 0,
+                            rpc: 0,
+                            date_start: '',
+                        };
+                    }
+
+                    groupedData[dynamicGroupValue].spend += parseFloat(dataEntry.spend || 0);
+                    groupedData[dynamicGroupValue].estimatedRevenue += parseFloat(dataEntry.estimatedRevenue || 0);
+                    groupedData[dynamicGroupValue].profit += parseFloat(dataEntry.profit || 0);
+                    groupedData[dynamicGroupValue].cpl += parseFloat(dataEntry.cpl || 0);
+                    groupedData[dynamicGroupValue].cpc += parseFloat(dataEntry.cpc || 0);
+                    groupedData[dynamicGroupValue].rpc += parseFloat(dataEntry.rpc || 0);
+
+                    // Date handling
+                    if (!groupedData[dynamicGroupValue].date_start) {
+                        groupedData[dynamicGroupValue].date_start = dayjs(dataEntry.date_start).format('YYYY-MM-DD');
+                    } else {
+                        const currentDate = dayjs(groupedData[dynamicGroupValue].date_start);
+                        const newDate = dayjs(dataEntry.date_start);
+                        groupedData[dynamicGroupValue].date_start = currentDate.isBefore(newDate)
+                            ? newDate.format('YYYY-MM-DD')
+                            : currentDate.format('YYYY-MM-DD');
+                    }
+                });
+
+                setRawdata(groupedData);
             } catch (error) {
                 console.error("Error fetching mainData:", error);
+            } finally {
                 setLoading(false);
             }
-        };
+        }
 
         fetchMainData();
     }, [startDate, endDate, timezone]);
 
-    // useEffect(() => {
-    //     const fetchFinalData = () => {
-    //         if (!Table || Table.length === 0) {
-    //             console.log('Table is empty or undefined');
-    //             return;
-    //         }
-    //         const groupedData = Table.reduce((acc, item) => {
-    //             const accNumber = item.buyercode;
-    //             acc[accNumber] = acc[accNumber] || [];
-    //             acc[accNumber].push(item);
-    //             return acc;
-    //         }, {});
-    //         const top5ProfitData = Object.values(groupedData).flatMap(group => {
-    //             const positiveProfitGroup = group.filter(item => item.profit < 0);
-    //             const sortedGroup = positiveProfitGroup.sort((a, b) => b.profit - a.profit);
-    //             return sortedGroup.slice(0, 7);
-    //         });
-
-    //         setFinalData(top5ProfitData);
-    //     };
-
-    //     fetchFinalData();
-    // }, [Table]);
-
-
-
     useEffect(() => {
-        // Ensure this runs only in the client environment
-        if (typeof window === 'undefined') return;
+        async function fetchMainData() {
+            try {
+                // Ensure Table is defined and has items
+                if (!Table || Table.length === 0) {
+                    console.log('Table is empty or undefined');
+                    return;
+                }
     
-        const fetchFinalData = () => {
-            if (!Table || Table.length === 0) {
-                console.log('Table is empty or undefined');
-                return;
+                // Grouping data by buyercode
+                const groupedData = Table.reduce((acc, item) => {
+                    const accNumber = item.buyercode;
+                    if (accNumber) {
+                        acc[accNumber] = acc[accNumber] || [];
+                        acc[accNumber].push(item);
+                    }
+                    return acc;
+                }, {});
+    
+                // Filter for positive profit and get top 5 entries
+                const top5ProfitData = Object.values(groupedData).flatMap(group => {
+                    const positiveProfitGroup = group.filter(item => item.profit > 0); // Change to > 0 for positive profit
+                    const sortedGroup = positiveProfitGroup.sort((a, b) => b.profit - a.profit);
+                    return sortedGroup.slice(0, 5); // Adjusted to get top 5 items
+                });
+    
+                setfinaldata(top5ProfitData);
+            } catch (error) {
+                console.error('Error fetching mainData:', error);
+                // Consider adding error handling logic here
             }
+        }
     
-            // Group data by buyercode
-            const groupedData = Table.reduce((acc, item) => {
-                const accNumber = item.buyercode;
-                acc[accNumber] = acc[accNumber] || [];
-                acc[accNumber].push(item);
-                return acc;
-            }, {});
-    
-            // Get top 5 profit data
-            const top5ProfitData = Object.values(groupedData).flatMap(group => {
-                const positiveProfitGroup = group.filter(item => item.profit < 0);
-                const sortedGroup = positiveProfitGroup.sort((a, b) => b.profit - a.profit);
-                return sortedGroup.slice(0, 7); // Change to slice(0, 5) if you want top 5 instead of 7
-            });
-    
-            setFinalData(top5ProfitData);
-        };
-    
-        fetchFinalData();
+        fetchMainData();
     }, [Table]);
     
 
@@ -422,7 +409,7 @@ export default function Eboard() {
 
     return (
         <>
-            <Navigation toggleSidebar={toggleSidebar} sidebarToggled={sidebarToggled} />
+           <Navigation toggleSidebar={toggleSidebar} sidebarToggled={sidebarToggled} />
             <div className="content-holder">
 
                 <div className="topbar">
