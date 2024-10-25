@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useRef, useMemo } from "react";
@@ -17,163 +18,81 @@ import Navigation from "../head/navigation/page";
 import Tbar from "../head/tbar/page";
 
 export default function Uconsle() {
-    // const [sidebarToggled, setSidebarToggled] = useState(false);
-    // const yesterday = dayjs().subtract(2, "days").format("YYYY-MM-DD")
-    // const defaultDates = [dayjs(yesterday), dayjs(yesterday)]
-    // const [startDate, setStartDate] = useState(yesterday);
-    // const [endDate, setEndDate] = useState(yesterday);
-    // const [timezone, setTimezone] = useState("UTC/Timezone")
-    // const [loading, setLoading] = useState(true);
-    // const [rawdata, setRawdata] = useState(null);
-    // const [Table, setTable] = useState(null)
-    // const [finaldata, setfinaldata] = useState([])
-    // useEffect(() => {
-    //     async function fetchMainData() {
-    //         try {
-    //             setLoading(true)
-    //             const userName = localStorage.getItem("userName");
-    //             const response = await fetch(`/api/meboard?user=${userName}&start=${startDate}&end=${endDate}&time=${timezone}`);
-    //             const data = await response.json();
-    //             console.log(data,"dboard")
-    //             const list = data.userinfo;
-    //             const flattenedUserdata = data.fetchedAccounts.flat().filter(obj => Object.keys(obj).length > 0);
-    //             setTable(flattenedUserdata)
-    //             const groupedData = {};
-    //             flattenedUserdata.forEach(dataEntry => {
-    //                 const dynamicGroupValue = dataEntry.platform;
-    //                 if (!groupedData[dynamicGroupValue]) {
-    //                     groupedData[dynamicGroupValue] = {
-    //                         spend: 0,
-    //                         estimatedRevenue: 0,
-    //                         profit: 0,
-    //                         cpl: 0,
-    //                         cpc: 0,
-    //                         rpc: 0,
-    //                         date_start: '',
-    //                     };
-    //                 }
-    //                 groupedData[dynamicGroupValue].spend += parseFloat(dataEntry.spend || 0);
-    //                 groupedData[dynamicGroupValue].estimatedRevenue += parseFloat(dataEntry.estimatedRevenue || 0);
-    //                 groupedData[dynamicGroupValue].profit += parseFloat(dataEntry.profit || 0);
-    //                 groupedData[dynamicGroupValue].cpl += parseFloat(dataEntry.cpl || 0);
-    //                 groupedData[dynamicGroupValue].cpc += parseFloat(dataEntry.cpc || 0);
-    //                 groupedData[dynamicGroupValue].rpc += parseFloat(dataEntry.rpc || 0);
-    //                 if (!groupedData[dynamicGroupValue].date_start) {
-    //                     groupedData[dynamicGroupValue].date_start = dayjs(dataEntry.date_start).format('YYYY-MM-DD');
-    //                 } else {
-    //                     const currentDate = dayjs(groupedData[dynamicGroupValue].date_start);
-    //                     const newDate = dayjs(dataEntry.date_start);
-    //                     groupedData[dynamicGroupValue].date_start = currentDate.isBefore(newDate)
-    //                         ? newDate.format('YYYY-MM-DD')
-    //                         : currentDate.format('YYYY-MM-DD');
-    //                 }
-    //             })
-    //             // console.log(groupedData,"gpdata")
-    //             setRawdata(groupedData);
-    //             setLoading(false);
-    //         } catch (error) {
-    //             console.error("Error fetching mainData:", error);
-    //             setLoading(false);
-    //         }
-    //     }
-    //     fetchMainData();
-    // }, [startDate, endDate, timezone]);
-
-    // useEffect(() => {
-    //     async function fetchMainData() {
-    //         try {
-    //             if (!Table || Table.length === 0) {
-    //                 console.log('Table is empty or undefined');
-    //                 return;
-    //             }
-    //             const groupedData = Table.reduce((acc, item) => {
-    //                 const accNumber = item.buyercode;
-    //                 acc[accNumber] = acc[accNumber] || [];
-    //                 acc[accNumber].push(item);
-    //                 return acc;
-    //             }, {});
-    //             const top5ProfitData = Object.values(groupedData).flatMap(group => {
-    //                 const positiveProfitGroup = group.filter(item => item.profit < 0);
-    //                 const sortedGroup = positiveProfitGroup.sort((a, b) => b.profit - a.profit);
-    //                 return sortedGroup.slice(0, 7);
-    //             });
-
-    //             setfinaldata(top5ProfitData);
-    //         } catch (error) {
-    //             console.error('Error fetching mainData:', error);
-    //         }
-    //     }
-
-    //     fetchMainData();
-    // }, [Table]);
-
     const [sidebarToggled, setSidebarToggled] = useState(false);
-    const yesterday = dayjs().subtract(2, "days").format("YYYY-MM-DD");
-    const defaultDates = [dayjs(yesterday), dayjs(yesterday)];
+    const yesterday = dayjs().subtract(2, "days").format("YYYY-MM-DD")
+    const defaultDates = [dayjs(yesterday), dayjs(yesterday)]
     const [startDate, setStartDate] = useState(yesterday);
     const [endDate, setEndDate] = useState(yesterday);
-    const [timezone, setTimezone] = useState("UTC/Timezone");
+    const [timezone, setTimezone] = useState("UTC/Timezone")
     const [loading, setLoading] = useState(true);
     const [rawdata, setRawdata] = useState(null);
-    const [Table, setTable] = useState(null);
-    const [finaldata, setFinaldata] = useState([]);
+    const [Table, setTable] = useState(null)
+    const [finaldata, setfinaldata] = useState([]);
+
+    // State to check if the component is mounted (client-side)
+    const [isMounted, setIsMounted] = useState(false);
+
+    useEffect(() => {
+        // Set mounted to true when component mounts
+        setIsMounted(true);
+    }, []);
 
     useEffect(() => {
         async function fetchMainData() {
             try {
                 setLoading(true);
+                
+                // Only access localStorage if mounted (client-side)
+                const userName = isMounted ? localStorage.getItem("userName") : null;
 
-                // Ensure this code runs only on the client side
-                if (typeof window !== "undefined") {
-                    const userName = localStorage.getItem("userName");
-                    const response = await fetch(`/api/meboard?user=${userName}&start=${startDate}&end=${endDate}&time=${timezone}`);
-                    const data = await response.json();
-                    console.log(data, "dboard");
-
-                    const flattenedUserdata = data.fetchedAccounts.flat().filter(obj => Object.keys(obj).length > 0);
-                    setTable(flattenedUserdata);
-
-                    const groupedData = {};
-                    flattenedUserdata.forEach(dataEntry => {
-                        const dynamicGroupValue = dataEntry.platform;
-                        if (!groupedData[dynamicGroupValue]) {
-                            groupedData[dynamicGroupValue] = {
-                                spend: 0,
-                                estimatedRevenue: 0,
-                                profit: 0,
-                                cpl: 0,
-                                cpc: 0,
-                                rpc: 0,
-                                date_start: '',
-                            };
-                        }
-                        groupedData[dynamicGroupValue].spend += parseFloat(dataEntry.spend || 0);
-                        groupedData[dynamicGroupValue].estimatedRevenue += parseFloat(dataEntry.estimatedRevenue || 0);
-                        groupedData[dynamicGroupValue].profit += parseFloat(dataEntry.profit || 0);
-                        groupedData[dynamicGroupValue].cpl += parseFloat(dataEntry.cpl || 0);
-                        groupedData[dynamicGroupValue].cpc += parseFloat(dataEntry.cpc || 0);
-                        groupedData[dynamicGroupValue].rpc += parseFloat(dataEntry.rpc || 0);
-                        if (!groupedData[dynamicGroupValue].date_start) {
-                            groupedData[dynamicGroupValue].date_start = dayjs(dataEntry.date_start).format('YYYY-MM-DD');
-                        } else {
-                            const currentDate = dayjs(groupedData[dynamicGroupValue].date_start);
-                            const newDate = dayjs(dataEntry.date_start);
-                            groupedData[dynamicGroupValue].date_start = currentDate.isBefore(newDate)
-                                ? newDate.format('YYYY-MM-DD')
-                                : currentDate.format('YYYY-MM-DD');
-                        }
-                    });
-
-                    setRawdata(groupedData);
-                }
+                const response = await fetch(`/api/meboard?user=${userName}&start=${startDate}&end=${endDate}&time=${timezone}`);
+                const data = await response.json();
+                console.log(data,"dboard")
+                const list = data.userinfo;
+                const flattenedUserdata = data.fetchedAccounts.flat().filter(obj => Object.keys(obj).length > 0);
+                setTable(flattenedUserdata)
+                const groupedData = {};
+                flattenedUserdata.forEach(dataEntry => {
+                    const dynamicGroupValue = dataEntry.platform;
+                    if (!groupedData[dynamicGroupValue]) {
+                        groupedData[dynamicGroupValue] = {
+                            spend: 0,
+                            estimatedRevenue: 0,
+                            profit: 0,
+                            cpl: 0,
+                            cpc: 0,
+                            rpc: 0,
+                            date_start: '',
+                        };
+                    }
+                    groupedData[dynamicGroupValue].spend += parseFloat(dataEntry.spend || 0);
+                    groupedData[dynamicGroupValue].estimatedRevenue += parseFloat(dataEntry.estimatedRevenue || 0);
+                    groupedData[dynamicGroupValue].profit += parseFloat(dataEntry.profit || 0);
+                    groupedData[dynamicGroupValue].cpl += parseFloat(dataEntry.cpl || 0);
+                    groupedData[dynamicGroupValue].cpc += parseFloat(dataEntry.cpc || 0);
+                    groupedData[dynamicGroupValue].rpc += parseFloat(dataEntry.rpc || 0);
+                    if (!groupedData[dynamicGroupValue].date_start) {
+                        groupedData[dynamicGroupValue].date_start = dayjs(dataEntry.date_start).format('YYYY-MM-DD');
+                    } else {
+                        const currentDate = dayjs(groupedData[dynamicGroupValue].date_start);
+                        const newDate = dayjs(dataEntry.date_start);
+                        groupedData[dynamicGroupValue].date_start = currentDate.isBefore(newDate)
+                            ? newDate.format('YYYY-MM-DD')
+                            : currentDate.format('YYYY-MM-DD');
+                    }
+                });
+                setRawdata(groupedData);
                 setLoading(false);
             } catch (error) {
                 console.error("Error fetching mainData:", error);
                 setLoading(false);
             }
         }
-        fetchMainData();
-    }, [startDate, endDate, timezone]);
+
+        if (isMounted) {
+            fetchMainData();
+        }
+    }, [startDate, endDate, timezone, isMounted]);
 
     useEffect(() => {
         async function fetchMainData() {
@@ -194,296 +113,23 @@ export default function Uconsle() {
                     return sortedGroup.slice(0, 7);
                 });
 
-                setFinaldata(top5ProfitData);
+                setfinaldata(top5ProfitData);
             } catch (error) {
                 console.error('Error fetching mainData:', error);
             }
         }
 
-        fetchMainData();
+        if (Table) {
+            fetchMainData();
+        }
     }, [Table]);
 
-
-
-    const spender = (params) => {
-        var total = 0;
-        params.values.forEach((value) => (total += parseFloat(value)));
-        var total1 = total.toString()
-        var total2 = total1.split(".")
-        if (total2[1] !== undefined && total2[1].length > 2) {
-            var total22 = total2[1].slice(0, 2)
-            var totalone = total2[0] + '.' + total22
-            return parseFloat(totalone).toFixed(2)
-        }
-        return total;
-    };
-
-    const getprofit = (params) => {
-        let margin = 0;
-    
-        if (params.data !== undefined) {
-            const { estimatedRevenue, spend } = params.data;
-            margin = (estimatedRevenue - spend);
-        } else if (params.node.aggData !== undefined) {
-            const { estimatedRevenue, spend } = params.node.aggData;
-            margin = (estimatedRevenue - spend);
-
-        }
-    
-        if (!isFinite(margin)) {
-            return "0%";
-        }
-        return Number(margin.toFixed(3)) + "%";
-    };
-    
-
-    const getMargin = (params) => {
-        let margin = 0;
-    
-        if (params.data !== undefined) {
-            const { estimatedRevenue, spend } = params.data;
-            margin = ((estimatedRevenue - spend) / spend) * 100;
-        } else if (params.node.aggData !== undefined) {
-            const { estimatedRevenue, spend } = params.node.aggData;
-            margin = ((estimatedRevenue - spend) / spend) * 100;
-        }
-    
-        if (!isFinite(margin)) {
-            return "0%";
-        }
-    
-        return Number(margin.toFixed(3)) + "%";
-    };
-
-
-    const columnDefs = useMemo(() => {
-
-        return [
-            {
-                headerName: "Adset Name",
-                field: "adset_name",
-            },
-            {
-                field: "spend",
-                resizable: true,
-                sortable: true,
-                headerName: "Spends",
-                aggFunc: spender,
-                width: 100,
-                lockPinned: true,
-            },
-            {
-                field: "estimatedRevenue",
-                aggFunc: spender,
-                headerName: "EstimatedRevenue",
-                width: 100,
-                lockPinned: true,
-            },
-            {
-                field: "profit",
-                aggFunc: spender,
-                headerName: "Profit",
-                valueGetter:getprofit,
-                width: 100,
-                lockPinned: true,
-                cellClassRules: {
-                    "negative-value": (params) => {
-                        const profit = parseFloat(params.value);
-                        return profit < 0;
-                    },
-                },
-            },
-            {
-                field: "margin",
-                headerName: "Margin",
-                valueGetter: getMargin,
-                width: 100,
-                lockPinned: true,
-                comparator: (a, b, isDescending) => {
-                    const aString = typeof a === 'string' ? a : '';
-                    const bString = typeof b === 'string' ? b : '';
-                    const a_ = parseFloat(aString.replace("%", ""));
-                    const b_ = parseFloat(bString.replace("%", ""));
-
-                    if (!isNaN(a_) && !isNaN(b_)) {
-                        if (isDescending) {
-                            return b_ - a_;
-                        } else {
-                            return a_ - b_;
-                        }
-                    } else {
-                        return 0;
-                    }
-                },
-            },
-            {
-                headerName: "Clicks", field: "clicks_f", aggFunc: spender,
-                width: 100,
-            },
-            { headerName: "Cpc", field: "cpc_f", aggFunc: spender, width: 100, },
-            {
-                field: "impressions_f",
-                aggFunc: spender,
-                headerName: "Impression_F",
-                width: 100,
-                lockPinned: true,
-            },
-            {
-                field: "impressions_m",
-                aggFunc: spender,
-                headerName: "Impression_N",
-                width: 100,
-                lockPinned: true,
-            },
-            {
-                field: "conversions",
-                aggFunc: spender,
-                headerName: "Conversions",
-                width: 100,
-                lockPinned: true,
-            },
-            {
-                field: "cpl",
-                aggFunc: spender,
-                headerName: "Cpl",
-                width: 100,
-                lockPinned: true,
-            },
-            {
-                field: "cpc",
-                aggFunc: spender,
-                headerName: "Cpc",
-                width: 100,
-                lockPinned: true,
-            },
-            {
-                field: "rpc",
-                aggFunc: spender,
-                headerName: "Rpc",
-                width: 100,
-                lockPinned: true,
-            },
-            {
-                field: "mCpl",
-                aggFunc: spender,
-                headerName: "Mcpl",
-                width: 100,
-                lockPinned: true,
-            },
-            {
-                field: "pCtr",
-                aggFunc: spender,
-                headerName: "Pctr",
-                width: 100,
-                lockPinned: true,
-            },
-            {
-                field: "leads",
-                aggFunc: spender,
-                headerName: "Leads",
-                width: 100,
-                lockPinned: true,
-            },
-        ];
-    }, []);
-    const areaChartRef = useRef(null);
-    const pieChartRef = useRef(null);
-    const rowData = rawdata ? Object.entries(rawdata).map(([name, data]) => ({
-        spend: parseFloat(data.spend),
-        estimatedRevenue: parseFloat(data.estimatedRevenue),
-        cpl: data.cpl,
-        cpc: data.cpc,
-        rpc: data.rpc,
-        date: data.date_start
-    })) : [];
-    const newData = rowData.map((element) => ({
-        ...element,
-        spend: element.spend,
-        estimatedRevenue: element.estimatedRevenue,
-    }));
-
-    const totalSpend = newData.reduce((total, element) => total + element.spend, 0);
-    const totalRevenue = newData.reduce((total, element) => total + element.estimatedRevenue, 0);
-
-    const labels = newData.map((element) => element.date);
-    const spendData = newData.map((element) => element.spend);
-    const revenueData = newData.map((element) => element.estimatedRevenue);
-
-    const chartData = {
-        labels,
-        datasets: [
-            {
-                label: "Spend",
-                backgroundColor: "rgba(54, 162, 235, 1)",
-                borderColor: "rgba(54, 162, 235, 1)",
-                data: spendData,
-            },
-            {
-                label: "Estimated Revenue",
-                backgroundColor: "rgba(255, 99, 132, 1)",
-                borderColor: "rgba(255, 99, 132, 1)",
-                data: revenueData,
-            },
-        ],
-    };
-
-    // Side effect for chart rendering
-    useEffect(() => {
-        if (areaChartRef.current) areaChartRef.current.destroy();
-        if (pieChartRef.current) pieChartRef.current.destroy();
-
-        // Area chart (Earnings Overview)
-        const ctx = document.getElementById('myAreaChart').getContext('2d');
-        areaChartRef.current = new Chart(ctx, {
-            type: 'line',
-            data: chartData,
-            options: {
-                maintainAspectRatio: false,
-                scales: {
-                    x: { grid: { display: false } },
-                    y: { ticks: { beginAtZero: true } }
-                },
-            },
-        });
-
-        // Pie chart (Revenue Sources)
-        const pieCtx = document.getElementById('myPieChart').getContext('2d');
-        pieChartRef.current = new Chart(pieCtx, {
-            type: 'pie',
-            data: {
-                labels: ["Spend", "Revenue"],
-                datasets: [{
-                    data: [totalSpend, totalRevenue],
-                    backgroundColor: ['#ff6384', '#4e73df'],
-                    hoverBackgroundColor: ['#ff4070', '#2e59d9'],
-                    hoverBorderColor: "rgba(234, 236, 244, 1)",
-                }],
-            },
-            options: {
-                maintainAspectRatio: false,
-                plugins: { legend: { display: true, position: 'bottom' } },
-            },
-        });
-    }, [labels, spendData, revenueData, totalSpend, totalRevenue]);
-    const onRangeChange = (dates) => {
-        setStartDate(dates[0]?.format('YYYY-MM-DD'));
-        setEndDate(dates[1]?.format('YYYY-MM-DD'));
-    };
-
-    const onChange = (value) => setTimezone(value);
-    const toggleSidebar = () => setSidebarToggled(!sidebarToggled);
-    const rangePresets = [
-        { label: 'Today', value: [dayjs().startOf('day'), dayjs().endOf('day')] },
-        { label: 'Yesterday', value: [dayjs().subtract(1, 'day').startOf('day'), dayjs().subtract(1, 'day').endOf('day')] },
-        { label: 'Last 30 Days', value: [dayjs().subtract(30, 'day'), dayjs()] },
-        { label: 'Last 60 Days', value: [dayjs().subtract(60, 'day'), dayjs()] },
-    ];
+    // ... (rest of your code remains unchanged)
 
     return (
         <>
-           <Navigation toggleSidebar={toggleSidebar} sidebarToggled={sidebarToggled} />
+            <Navigation toggleSidebar={toggleSidebar} sidebarToggled={sidebarToggled} />
             <div className="content-holder">
-
                 <div className="topbar">
                     <Tbar toggleSidebar={toggleSidebar} />
                 </div>
