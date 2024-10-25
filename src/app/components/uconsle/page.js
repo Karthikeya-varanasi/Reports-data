@@ -17,59 +17,155 @@ import Navigation from "../head/navigation/page";
 import Tbar from "../head/tbar/page";
 
 export default function Uconsle() {
+    // const [sidebarToggled, setSidebarToggled] = useState(false);
+    // const yesterday = dayjs().subtract(2, "days").format("YYYY-MM-DD")
+    // const defaultDates = [dayjs(yesterday), dayjs(yesterday)]
+    // const [startDate, setStartDate] = useState(yesterday);
+    // const [endDate, setEndDate] = useState(yesterday);
+    // const [timezone, setTimezone] = useState("UTC/Timezone")
+    // const [loading, setLoading] = useState(true);
+    // const [rawdata, setRawdata] = useState(null);
+    // const [Table, setTable] = useState(null)
+    // const [finaldata, setfinaldata] = useState([])
+    // useEffect(() => {
+    //     async function fetchMainData() {
+    //         try {
+    //             setLoading(true)
+    //             const userName = localStorage.getItem("userName");
+    //             const response = await fetch(`/api/meboard?user=${userName}&start=${startDate}&end=${endDate}&time=${timezone}`);
+    //             const data = await response.json();
+    //             console.log(data,"dboard")
+    //             const list = data.userinfo;
+    //             const flattenedUserdata = data.fetchedAccounts.flat().filter(obj => Object.keys(obj).length > 0);
+    //             setTable(flattenedUserdata)
+    //             const groupedData = {};
+    //             flattenedUserdata.forEach(dataEntry => {
+    //                 const dynamicGroupValue = dataEntry.platform;
+    //                 if (!groupedData[dynamicGroupValue]) {
+    //                     groupedData[dynamicGroupValue] = {
+    //                         spend: 0,
+    //                         estimatedRevenue: 0,
+    //                         profit: 0,
+    //                         cpl: 0,
+    //                         cpc: 0,
+    //                         rpc: 0,
+    //                         date_start: '',
+    //                     };
+    //                 }
+    //                 groupedData[dynamicGroupValue].spend += parseFloat(dataEntry.spend || 0);
+    //                 groupedData[dynamicGroupValue].estimatedRevenue += parseFloat(dataEntry.estimatedRevenue || 0);
+    //                 groupedData[dynamicGroupValue].profit += parseFloat(dataEntry.profit || 0);
+    //                 groupedData[dynamicGroupValue].cpl += parseFloat(dataEntry.cpl || 0);
+    //                 groupedData[dynamicGroupValue].cpc += parseFloat(dataEntry.cpc || 0);
+    //                 groupedData[dynamicGroupValue].rpc += parseFloat(dataEntry.rpc || 0);
+    //                 if (!groupedData[dynamicGroupValue].date_start) {
+    //                     groupedData[dynamicGroupValue].date_start = dayjs(dataEntry.date_start).format('YYYY-MM-DD');
+    //                 } else {
+    //                     const currentDate = dayjs(groupedData[dynamicGroupValue].date_start);
+    //                     const newDate = dayjs(dataEntry.date_start);
+    //                     groupedData[dynamicGroupValue].date_start = currentDate.isBefore(newDate)
+    //                         ? newDate.format('YYYY-MM-DD')
+    //                         : currentDate.format('YYYY-MM-DD');
+    //                 }
+    //             })
+    //             // console.log(groupedData,"gpdata")
+    //             setRawdata(groupedData);
+    //             setLoading(false);
+    //         } catch (error) {
+    //             console.error("Error fetching mainData:", error);
+    //             setLoading(false);
+    //         }
+    //     }
+    //     fetchMainData();
+    // }, [startDate, endDate, timezone]);
+
+    // useEffect(() => {
+    //     async function fetchMainData() {
+    //         try {
+    //             if (!Table || Table.length === 0) {
+    //                 console.log('Table is empty or undefined');
+    //                 return;
+    //             }
+    //             const groupedData = Table.reduce((acc, item) => {
+    //                 const accNumber = item.buyercode;
+    //                 acc[accNumber] = acc[accNumber] || [];
+    //                 acc[accNumber].push(item);
+    //                 return acc;
+    //             }, {});
+    //             const top5ProfitData = Object.values(groupedData).flatMap(group => {
+    //                 const positiveProfitGroup = group.filter(item => item.profit < 0);
+    //                 const sortedGroup = positiveProfitGroup.sort((a, b) => b.profit - a.profit);
+    //                 return sortedGroup.slice(0, 7);
+    //             });
+
+    //             setfinaldata(top5ProfitData);
+    //         } catch (error) {
+    //             console.error('Error fetching mainData:', error);
+    //         }
+    //     }
+
+    //     fetchMainData();
+    // }, [Table]);
+
     const [sidebarToggled, setSidebarToggled] = useState(false);
-    const yesterday = dayjs().subtract(2, "days").format("YYYY-MM-DD")
-    const defaultDates = [dayjs(yesterday), dayjs(yesterday)]
+    const yesterday = dayjs().subtract(2, "days").format("YYYY-MM-DD");
+    const defaultDates = [dayjs(yesterday), dayjs(yesterday)];
     const [startDate, setStartDate] = useState(yesterday);
     const [endDate, setEndDate] = useState(yesterday);
-    const [timezone, setTimezone] = useState("UTC/Timezone")
+    const [timezone, setTimezone] = useState("UTC/Timezone");
     const [loading, setLoading] = useState(true);
     const [rawdata, setRawdata] = useState(null);
-    const [Table, setTable] = useState(null)
-    const [finaldata, setfinaldata] = useState([])
+    const [Table, setTable] = useState(null);
+    const [finaldata, setFinaldata] = useState([]);
+
     useEffect(() => {
         async function fetchMainData() {
             try {
-                setLoading(true)
-                const userName = localStorage.getItem("userName");
-                const response = await fetch(`/api/meboard?user=${userName}&start=${startDate}&end=${endDate}&time=${timezone}`);
-                const data = await response.json();
-                console.log(data,"dboard")
-                const list = data.userinfo;
-                const flattenedUserdata = data.fetchedAccounts.flat().filter(obj => Object.keys(obj).length > 0);
-                setTable(flattenedUserdata)
-                const groupedData = {};
-                flattenedUserdata.forEach(dataEntry => {
-                    const dynamicGroupValue = dataEntry.platform;
-                    if (!groupedData[dynamicGroupValue]) {
-                        groupedData[dynamicGroupValue] = {
-                            spend: 0,
-                            estimatedRevenue: 0,
-                            profit: 0,
-                            cpl: 0,
-                            cpc: 0,
-                            rpc: 0,
-                            date_start: '',
-                        };
-                    }
-                    groupedData[dynamicGroupValue].spend += parseFloat(dataEntry.spend || 0);
-                    groupedData[dynamicGroupValue].estimatedRevenue += parseFloat(dataEntry.estimatedRevenue || 0);
-                    groupedData[dynamicGroupValue].profit += parseFloat(dataEntry.profit || 0);
-                    groupedData[dynamicGroupValue].cpl += parseFloat(dataEntry.cpl || 0);
-                    groupedData[dynamicGroupValue].cpc += parseFloat(dataEntry.cpc || 0);
-                    groupedData[dynamicGroupValue].rpc += parseFloat(dataEntry.rpc || 0);
-                    if (!groupedData[dynamicGroupValue].date_start) {
-                        groupedData[dynamicGroupValue].date_start = dayjs(dataEntry.date_start).format('YYYY-MM-DD');
-                    } else {
-                        const currentDate = dayjs(groupedData[dynamicGroupValue].date_start);
-                        const newDate = dayjs(dataEntry.date_start);
-                        groupedData[dynamicGroupValue].date_start = currentDate.isBefore(newDate)
-                            ? newDate.format('YYYY-MM-DD')
-                            : currentDate.format('YYYY-MM-DD');
-                    }
-                })
-                // console.log(groupedData,"gpdata")
-                setRawdata(groupedData);
+                setLoading(true);
+
+                // Ensure this code runs only on the client side
+                if (typeof window !== "undefined") {
+                    const userName = localStorage.getItem("userName");
+                    const response = await fetch(`/api/meboard?user=${userName}&start=${startDate}&end=${endDate}&time=${timezone}`);
+                    const data = await response.json();
+                    console.log(data, "dboard");
+
+                    const flattenedUserdata = data.fetchedAccounts.flat().filter(obj => Object.keys(obj).length > 0);
+                    setTable(flattenedUserdata);
+
+                    const groupedData = {};
+                    flattenedUserdata.forEach(dataEntry => {
+                        const dynamicGroupValue = dataEntry.platform;
+                        if (!groupedData[dynamicGroupValue]) {
+                            groupedData[dynamicGroupValue] = {
+                                spend: 0,
+                                estimatedRevenue: 0,
+                                profit: 0,
+                                cpl: 0,
+                                cpc: 0,
+                                rpc: 0,
+                                date_start: '',
+                            };
+                        }
+                        groupedData[dynamicGroupValue].spend += parseFloat(dataEntry.spend || 0);
+                        groupedData[dynamicGroupValue].estimatedRevenue += parseFloat(dataEntry.estimatedRevenue || 0);
+                        groupedData[dynamicGroupValue].profit += parseFloat(dataEntry.profit || 0);
+                        groupedData[dynamicGroupValue].cpl += parseFloat(dataEntry.cpl || 0);
+                        groupedData[dynamicGroupValue].cpc += parseFloat(dataEntry.cpc || 0);
+                        groupedData[dynamicGroupValue].rpc += parseFloat(dataEntry.rpc || 0);
+                        if (!groupedData[dynamicGroupValue].date_start) {
+                            groupedData[dynamicGroupValue].date_start = dayjs(dataEntry.date_start).format('YYYY-MM-DD');
+                        } else {
+                            const currentDate = dayjs(groupedData[dynamicGroupValue].date_start);
+                            const newDate = dayjs(dataEntry.date_start);
+                            groupedData[dynamicGroupValue].date_start = currentDate.isBefore(newDate)
+                                ? newDate.format('YYYY-MM-DD')
+                                : currentDate.format('YYYY-MM-DD');
+                        }
+                    });
+
+                    setRawdata(groupedData);
+                }
                 setLoading(false);
             } catch (error) {
                 console.error("Error fetching mainData:", error);
@@ -98,7 +194,7 @@ export default function Uconsle() {
                     return sortedGroup.slice(0, 7);
                 });
 
-                setfinaldata(top5ProfitData);
+                setFinaldata(top5ProfitData);
             } catch (error) {
                 console.error('Error fetching mainData:', error);
             }
