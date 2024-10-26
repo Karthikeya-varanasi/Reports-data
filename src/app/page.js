@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 export default function Home() {
   const [Username, setUsername] = useState("");
   const [Password, setPassword] = useState("");
-  const [Msg, setMsg] = useState("");
+  const [message, setmessage] = useState("");
   const router = useRouter();
 
   const handleSubmit = async (e) => {
@@ -26,21 +26,21 @@ export default function Home() {
     if (res.ok) {
       localStorage.setItem("Username", Username);
       localStorage.setItem("role", role);
-      setMsg(`Success: ${data.Msg}`);
+      setmessage(`Success: ${data.message}`);
       router.push("/cpanel");
     } else if (res.status === 403) {
-      setMsg(`Error: ${data.Msg}`);
+      setmessage(`Error: ${data.message}`);
     } else {
-      setMsg(`Error: ${data.Msg}`);
+      setmessage(`Error: ${data.message}`);
     }
   };
 
   return (
     <>
       <div className="dg_form_handler">
-        {Msg && (
-          <div className="alert alert-info Msg">
-            <p>{Msg}</p>
+        {message && (
+          <div className="alert alert-info message">
+            <p>{message}</p>
           </div>
         )}
         <form className="form" onSubmit={handleSubmit}>

@@ -1,12 +1,9 @@
 "use client";
-
 import { useState, useEffect, useMemo, useRef } from "react";
 import Chart from 'chart.js/auto';
-import { Select, DatePicker, Space, Button, Drawer, theme } from 'antd';
+import { Select, DatePicker, Space } from 'antd';
 const { RangePicker } = DatePicker;
-import { Flex, Spin } from 'antd';
 import React from 'react';
-import moment from "moment-timezone";
 import dayjs from 'dayjs';
 import "../../../../node_modules/bootstrap/dist/css/bootstrap.css";
 import "../../../../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js";
