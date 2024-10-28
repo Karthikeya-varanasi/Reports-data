@@ -8,7 +8,7 @@ const uri = "mongodb+srv://karthikvaranasi07:l39eu8xTl4lK9stI@cluster0.vbw2n.mon
 const client = new MongoClient(uri);
 export async function GET(req) {
     try {
-        const cookieData = cookies().getAll();
+        // const cookieData = cookies().getAll();
         const url = new URL(req.url);
         const searchParams = url.searchParams; 
         const employName = searchParams.get('employName');

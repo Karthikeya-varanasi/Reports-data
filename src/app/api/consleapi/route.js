@@ -8,7 +8,7 @@ export async function GET(req) {
     const client = new MongoClient(uri);
     
     try {
-        const cookieData = cookies().getAll();
+        // const cookieData = cookies().getAll();
         const url = new URL(req.url);
         const searchParams = url.searchParams; 
         const user = searchParams.get('user');
